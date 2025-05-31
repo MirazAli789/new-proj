@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>মানব অধিকার অন্বেষণ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .card-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .card.active .card-content {
+            max-height: 9999px; /* Large enough to accommodate all content */
+        }
+        .card-title-icon {
+            transition: transform 0.3s ease;
+        }
+        .card.active .card-title-icon {
+            transform: rotate(180deg);
+        }
+        .filter-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #3b82f6;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <div class="container mx-auto px-4 py-8 md:py-12">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-blue-600 mb-2">মানব অধিকার অন্বেষণ</h1>
+            <p class="text-lg text-stone-600">একটি ইন্টারেক্টিভ গাইড</p>
+        </header>
+
+        <main>
+            <section id="introduction" class="mb-12 bg-white p-6 rounded-lg shadow-md border border-stone-200">
+                <h2 class="text-2xl font-bold mb-3 text-stone-800">স্বাগতম!</h2>
+                <p class="text-stone-700 leading-relaxed">
+                    এই ইন্টারেক্টিভ অ্যাপ্লিকেশনটি মানব অধিকারের জটিল এবং গুরুত্বপূর্ণ ধারণাগুলিকে সহজভাবে উপস্থাপন করার জন্য তৈরি করা হয়েছে। এখানে আপনি মানব অধিকারের বিভিন্ন দিক, যেমন - তাদের বৈশিষ্ট্য, প্রকারভেদ, এবং আন্তর্জাতিক সংস্থাগুলির ভূমিকা সম্পর্কে জানতে পারবেন। নীচের ফিল্টার বোতামগুলি ব্যবহার করে নির্দিষ্ট বিষয়ে অন্বেষণ করুন অথবা কার্ডগুলিতে ক্লিক করে বিস্তারিত তথ্য দেখুন।
+                </p>
+            </section>
+
+            <section id="ai-question" class="mb-12 bg-white p-6 rounded-lg shadow-md border border-stone-200">
+                <h2 class="text-2xl font-bold mb-3 text-stone-800">✨ এআই-কে প্রশ্ন জিজ্ঞাসা করুন</h2>
+                <p class="text-stone-700 leading-relaxed mb-4">
+                    মানব অধিকার সম্পর্কে আপনার যেকোনো প্রশ্ন এখানে টাইপ করুন এবং এআই আপনাকে একটি সংক্ষিপ্ত উত্তর দেবে।
+                </p>
+                <textarea id="questionInput" class="w-full p-3 border border-stone-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4" placeholder="আপনার প্রশ্ন লিখুন..."></textarea>
+                <button id="askAiBtn" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-full shadow-lg hover:bg-blue-700 transition flex items-center justify-center">
+                    <span id="buttonText">✨ প্রশ্ন জিজ্ঞাসা করুন</span>
+                    <div id="loadingSpinner" class="loading-spinner ml-2 hidden"></div>
+                </button>
+                <div id="aiResponse" class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200 text-stone-800 hidden">
+                    <h3 class="font-semibold text-lg mb-2">এআই-এর উত্তর:</h3>
+                    <p id="responseText"></p>
+                </div>
+            </section>
+
+            <section id="filters" class="mb-10 text-center">
+                 <div class="flex flex-wrap justify-center gap-2 md:gap-4">
+                    <button class="filter-btn active px-4 py-2 bg-white border-2 border-blue-500 text-blue-600 font-semibold rounded-full shadow-sm hover:bg-blue-100 hover:scale-105 transition duration-200" data-filter="all">সকল</button>
+                    <button class="filter-btn px-4 py-2 bg-white border-2 border-blue-500 text-blue-600 font-semibold rounded-full shadow-sm hover:bg-blue-100 hover:scale-105 transition duration-200" data-filter="concept">মৌলিক ধারণা</button>
+                    <button class="filter-btn px-4 py-2 bg-white border-2 border-blue-500 text-blue-600 font-semibold rounded-full shadow-sm hover:bg-blue-100 hover:scale-105 transition duration-200" data-filter="types">অধিকারের প্রকারভেদ</button>
+                    <button class="filter-btn px-4 py-2 bg-white border-2 border-blue-500 text-blue-600 font-semibold rounded-full shadow-sm hover:bg-blue-100 hover:scale-105 transition duration-200" data-filter="orgs">আন্তর্জাতিক সংস্থা</button>
+                    <button class="filter-btn px-4 py-2 bg-white border-2 border-blue-500 text-blue-600 font-semibold rounded-full shadow-sm hover:bg-blue-100 hover:scale-105 transition duration-200" data-filter="india">ভারতীয় প্রেক্ষাপট</button>
+                </div>
+            </section>
+
+            <section id="content-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <div class="card bg-white rounded-lg shadow-md border border-stone-200 overflow-hidden" data-category="concept">
+                    <div class="card-title p-5 cursor-pointer flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-stone-800">মানব অধিকারের সংজ্ঞা ও বৈশিষ্ট্য</h3>
+                        <span class="card-title-icon text-blue-500 text-2xl">▼</span>
+                    </div>
+                    <div class="card-content px-5 pb-5">
+                        <p class="font-semibold mb-2">সংজ্ঞা:</p>
+                        <p class="mb-4 text-stone-700">মানব অধিকার হলো সেই মৌলিক অধিকার ও স্বাধীনতা যা প্রতিটি মানুষের জন্মগতভাবে প্রাপ্য। এই অধিকারগুলি জাতি, লিঙ্গ, জাতীয়তা, ভাষা বা ধর্ম নির্বিশেষে সকলের জন্য সমানভাবে প্রযোজ্য।</p>
+                        <p class="font-semibold mb-2">অপরিহার্য বৈশিষ্ট্য:</p>
+                        <ul class="list-disc list-inside space-y-2 text-stone-700">
+                            <li><strong>সর্বজনীনতা:</strong> সকলের জন্য প্রযোজ্য।</li>
+                            <li><strong>অবিচ্ছেদ্যতা:</strong> কেড়ে নেওয়া যায় না।</li>
+                            <li><strong>অবিভাজ্যতা:</strong> সকল অধিকার সমান গুরুত্বপূর্ণ।</li>
+                            <li><strong>আন্তঃনির্ভরশীলতা:</strong> একটি অপরটির উপর নির্ভরশীল।</li>
+                            <li><strong>বৈষম্যহীনতা:</strong> কোনো বৈষম্য করা যাবে না।</li>
+                            <li><strong>আইনগত সুরক্ষা:</strong> আইন দ্বারা সুরক্ষিত।</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card bg-white rounded-lg shadow-md border border-stone-200 overflow-hidden" data-category="concept">
+                    <div class="card-title p-5 cursor-pointer flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-stone-800">‘অবিচ্ছেদ্য’ অধিকার কী?</h3>
+                        <span class="card-title-icon text-blue-500 text-2xl">▼</span>
+                    </div>
+                    <div class="card-content px-5 pb-5">
+                        <p class="text-stone-700 leading-relaxed">মানব অধিকারের প্রেক্ষাপটে ‘অবিচ্ছেদ্য’ (inalienable) শব্দটির অর্থ হলো এই অধিকারগুলি মানুষের কাছ থেকে কেড়ে নেওয়া, হস্তান্তর করা বা বিলুপ্ত করা যায় না। এই অধিকারগুলি প্রতিটি মানুষের জন্মগত এবং তাদের মানব সত্তার অবিচ্ছেদ্য অংশ। এগুলি কোনো সরকার বা কর্তৃপক্ষের দান নয়, বরং মানুষের সহজাত মর্যাদা ও মূল্যের স্বীকৃতি।</p>
+                    </div>
+                </div>
+
+                <div class="card bg-white rounded-lg shadow-md border border-stone-200 overflow-hidden" data-category="types">
+                    <div class="card-title p-5 cursor-pointer flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-stone-800">অধিকারের তিন প্রজন্ম</h3>
+                        <span class="card-title-icon text-blue-500 text-2xl">▼</span>
+                    </div>
+                    <div class="card-content px-5 pb-5 space-y-4">
+                        <div class="p-4 rounded-lg bg-blue-100 border-l-4 border-blue-500">
+                           <h4 class="font-bold text-lg mb-1">⚖️ প্রথম প্রজন্ম: নাগরিক ও রাজনৈতিক অধিকার</h4>
+                           <p class="text-sm text-stone-700">রাষ্ট্রীয় হস্তক্ষেপ থেকে ব্যক্তিকে সুরক্ষা দেয়। (যেমন: বাক স্বাধীনতা, জীবনের অধিকার)</p>
+                        </div>
+                         <div class="p-4 rounded-lg bg-green-100 border-l-4 border-green-500">
+                           <h4 class="font-bold text-lg mb-1">❤️ দ্বিতীয় প্রজন্ম: অর্থনৈতিক ও সামাজিক অধিকার</h4>
+                           <p class="text-sm text-stone-700">জীবনযাত্রার মান নিশ্চিত করে। (যেমন: শিক্ষার অধিকার, স্বাস্থ্যসেবার অধিকার)</p>
+                        </div>
+                         <div class="p-4 rounded-lg bg-yellow-100 border-l-4 border-yellow-500">
+                           <h4 class="font-bold text-lg mb-1">🤝 তৃতীয় প্রজন্ম: সংহতির অধিকার</h4>
+                           <p class="text-sm text-stone-700">গোষ্ঠী বা সমগ্র মানবতার কল্যাণ নিশ্চিত করে। (যেমন: উন্নয়নের অধিকার, শান্তির অধিকার)</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card bg-white rounded-lg shadow-md border border-stone-200 overflow-hidden" data-category="orgs">
+                    <div class="card-title p-5 cursor-pointer flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-stone-800">মানবাধিকারের সর্বজনীন ঘোষণা (UDHR)</h3>
+                        <span class="card-title-icon text-blue-500 text-2xl">▼</span>
+                    </div>
+                    <div class="card-content px-5 pb-5">
+                        <p class="text-stone-700 leading-relaxed">এটি একটি ঐতিহাসিক নথি যা ১৯৪৮ সালের ১০ই ডিসেম্বর জাতিসংঘের সাধারণ পরিষদ কর্তৃক গৃহীত হয়। এটিতে এমন মৌলিক অধিকার ও স্বাধীনতার একটি তালিকা রয়েছে যা প্রতিটি মানুষের প্রাপ্য। এটি আইনগতভাবে বাধ্যতামূলক না হলেও, আন্তর্জাতিক মানবাধিকার আইনের ভিত্তি হিসেবে কাজ করে।</p>
+                    </div>
+                </div>
+
+                <div class="card bg-white rounded-lg shadow-md border border-stone-200 overflow-hidden" data-category="types">
+                    <div class="card-title p-5 cursor-pointer flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-stone-800">ইতিবাচক বনাম নেতিবাচক অধিকার</h3>
+                        <span class="card-title-icon text-blue-500 text-2xl">▼</span>
+                    </div>
+                    <div class="card-content px-5 pb-5">
+                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="font-semibold text-lg mb-2">➕ ইতিবাচক অধিকার</h4>
+                                <p class="text-stone-700">রাষ্ট্রকে কিছু সক্রিয় পদক্ষেপ নিতে হয়। যেমন - শিক্ষার অধিকার পূরণের জন্য স্কুল তৈরি করা।</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg mb-2">➖ নেতিবাচক অধিকার</h4>
+                                <p class="text-stone-700">রাষ্ট্রকে কিছু করা থেকে বিরত থাকতে হয়। যেমন - বাক স্বাধীনতায় হস্তক্ষেপ না করা।</p>
+                            </div>
+                       </div>
+                    </div>
+                </div>
+                
+                <div class="card bg-white rounded-lg shadow-md border border-stone-200 overflow-hidden" data-category="india">
+                    <div class="card-title p-5 cursor-pointer flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-stone-800">ভারতীয় সংবিধানে মৌলিক অধিকার</h3>
+                        <span class="card-title-icon text-blue-500 text-2xl">▼</span>
+                    </div>
+                    <div class="card-content px-5 pb-5">
+                         <p class="text-stone-700 mb-4">ভারতীয় সংবিধানে মৌলিক অধিকার হিসেবে স্বীকৃত দুটি প্রধান অধিকার হলো:</p>
+                         <ul class="list-decimal list-inside space-y-2 font-semibold">
+                            <li>সমতার অধিকার</li>
+                            <li>স্বাধীনতার অধিকার</li>
+                         </ul>
+                    </div>
+                </div>
+                
+                <div class="card bg-white rounded-lg shadow-md border border-stone-200 overflow-hidden" data-category="orgs">
+                    <div class="card-title p-5 cursor-pointer flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-stone-800">আন্তর্জাতিক শ্রম সংস্থা (ILO)</h3>
+                        <span class="card-title-icon text-blue-500 text-2xl">▼</span>
+                    </div>
+                    <div class="card-content px-5 pb-5">
+                         <p class="text-stone-700 mb-2">এটি জাতিসংঘের একটি বিশেষায়িত সংস্থা যা শ্রমিকের অধিকার রক্ষা করে। এর প্রধান কাজগুলো হলো:</p>
+                         <ul class="list-disc list-inside space-y-2 text-stone-700">
+                             <li>আন্তর্জাতিক শ্রম মান নির্ধারণ করা।</li>
+                             <li>মান প্রয়োগ পর্যবেক্ষণ করা।</li>
+                             <li>সামাজিক সংলাপের ব্যবস্থা করা।</li>
+                             <li>নীতি প্রণয়নে সহায়তা করা।</li>
+                         </ul>
+                    </div>
+                </div>
+
+                <div class="card bg-white rounded-lg shadow-md border border-stone-200 overflow-hidden" data-category="orgs">
+                    <div class="card-title p-5 cursor-pointer flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-stone-800">মানবাধিকার হাইকমিশনারের কার্যালয় (OHCHR)</h3>
+                        <span class="card-title-icon text-blue-500 text-2xl">▼</span>
+                    </div>
+                    <div class="card-content px-5 pb-5">
+                        <p class="text-stone-700 mb-2">এটি বিশ্বব্যাপী মানবাধিকারের প্রচার ও সুরক্ষার জন্য জাতিসংঘের প্রধান সংস্থা। এর প্রধান কাজ:</p>
+                         <ul class="list-disc list-inside space-y-2 text-stone-700">
+                             <li>মানবাধিকারের প্রচার ও সুরক্ষা।</li>
+                             <li>রাষ্ট্রসমূহকে প্রযুক্তিগত সহায়তা প্রদান।</li>
+                             <li>মানবাধিকার লঙ্ঘন পর্যবেক্ষণ ও প্রতিবেদন।</li>
+                             <li>মানবাধিকার শিক্ষা ও সচেতনতা বৃদ্ধি।</li>
+                         </ul>
+                    </div>
+                </div>
+
+                <div class="card bg-white rounded-lg shadow-md border border-stone-200 overflow-hidden" data-category="orgs">
+                    <div class="card-title p-5 cursor-pointer flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-stone-800">জাতিসংঘের নারী অবস্থা কমিশন (UNCSW)</h3>
+                        <span class="card-title-icon text-blue-500 text-2xl">▼</span>
+                    </div>
+                    <div class="card-content px-5 pb-5">
+                        <p class="text-stone-700 mb-4">এটি লিঙ্গ সমতা এবং নারীর ক্ষমতায়নের জন্য নিবেদিত প্রধান বৈশ্বিক সংস্থা।</p>
+                        <h4 class="font-semibold mb-2">গঠন:</h4>
+                        <p class="text-stone-700 mb-4">৪৫ জন সদস্য রাষ্ট্র নিয়ে গঠিত, যা ভৌগোলিক অঞ্চলের ভিত্তিতে বণ্টিত হয়:</p>
+                        <div class="flex flex-wrap gap-2 text-sm">
+                            <div class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded">আফ্রিকা: ১৩</div>
+                            <div class="bg-teal-100 text-teal-800 px-2 py-1 rounded">এশিয়া-প্যাসিফিক: ১১</div>
+                            <div class="bg-rose-100 text-rose-800 px-2 py-1 rounded">ল্যাটিন আমেরিকা: ৯</div>
+                            <div class="bg-amber-100 text-amber-800 px-2 py-1 rounded">পশ্চিম ইউরোপ: ৮</div>
+                            <div class="bg-sky-100 text-sky-800 px-2 py-1 rounded">পূর্ব ইউরোপ: ৪</div>
+                        </div>
+                         <h4 class="font-semibold mt-4 mb-2">প্রধান কাজ:</h4>
+                         <ul class="list-disc list-inside space-y-2 text-stone-700">
+                             <li>নীতি প্রণয়ন ও সুপারিশ।</li>
+                             <li>বাস্তবায়ন পর্যালোচনা ও মূল্যায়ন।</li>
+                             <li>চ্যালেঞ্জ চিহ্নিতকরণ।</li>
+                             <li>সচেতনতা বৃদ্ধি।</li>
+                         </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-stone-200">
+            <p class="text-stone-500">&copy; ২০২৪ | একটি ইন্টারেক্টিভ শিক্ষামূলক প্রয়াস</p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                const title = card.querySelector('.card-title');
+                title.addEventListener('click', () => {
+                    card.classList.toggle('active');
+                });
+            });
+
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const contentCards = document.querySelectorAll('#content-grid .card');
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const filter = this.getAttribute('data-filter');
+
+                    contentCards.forEach(card => {
+                        if (filter === 'all' || card.getAttribute('data-category') === filter) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            const askAiBtn = document.getElementById('askAiBtn');
+            const questionInput = document.getElementById('questionInput');
+            const aiResponseDiv = document.getElementById('aiResponse');
+            const responseText = document.getElementById('responseText');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const buttonText = document.getElementById('buttonText');
+
+            askAiBtn.addEventListener('click', async () => {
+                const prompt = questionInput.value.trim();
+                if (!prompt) {
+                    responseText.textContent = 'অনুগ্রহ করে একটি প্রশ্ন লিখুন।';
+                    aiResponseDiv.classList.remove('hidden');
+                    return;
+                }
+
+                buttonText.classList.add('hidden');
+                loadingSpinner.classList.remove('hidden');
+                askAiBtn.disabled = true;
+                aiResponseDiv.classList.add('hidden');
+                responseText.textContent = '';
+
+                try {
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = "AIzaSyCcRm0o3zp7KeV7QCj6wrVA5JFUW5IAVG4"; 
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        responseText.textContent = text;
+                    } else {
+                        responseText.textContent = 'দুঃখিত, আপনার প্রশ্নের উত্তর দিতে পারিনি। অনুগ্রহ করে আবার চেষ্টা করুন।';
+                    }
+                } catch (error) {
+                    console.error('Error fetching AI response:', error);
+                    responseText.textContent = 'নেটওয়ার্ক ত্রুটি বা সার্ভার সমস্যা। অনুগ্রহ করে আবার চেষ্টা করুন।';
+                } finally {
+                    loadingSpinner.classList.add('hidden');
+                    buttonText.classList.remove('hidden');
+                    askAiBtn.disabled = false;
+                    aiResponseDiv.classList.remove('hidden');
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
